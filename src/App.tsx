@@ -1,8 +1,9 @@
 import React from 'react';
+import { SignIn } from './SignIn';
 
 function App() {
   return (
-    <p>hey</p>
+    <SignIn />
   );
 }
 
