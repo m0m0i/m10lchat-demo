@@ -8,7 +8,6 @@ export const SignIn = () => (
         minH="100vh"
         py="12"
         px={{ base: '4', lg: '8' }}
-
     >
         <Box maxW="md" mx="auto" mt="200">
             <Heading textAlign="center" size="xl" fontWeight="extrabold">
