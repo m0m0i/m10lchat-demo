@@ -1,6 +1,12 @@
-import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
-import { getAnalytics, Analytics } from 'firebase/analytics';
-import { Auth, getAuth, GoogleAuthProvider, signInWithPopup, UserCredential } from 'firebase/auth';
+import { initializeApp, getApps, FirebaseApp } from "firebase/app";
+import { getAnalytics, Analytics } from "firebase/analytics";
+import {
+  Auth,
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  UserCredential,
+} from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -13,7 +19,7 @@ const firebaseConfig = {
   measurementId: process.env.REACT_APP_MEASUREMENT_ID,
 };
 
-if (typeof window !== 'undefined' && !getApps().length) {
+if (typeof window !== "undefined" && !getApps().length) {
   const app: FirebaseApp = initializeApp(firebaseConfig);
   const analytics: Analytics = getAnalytics(app);
 }
@@ -21,9 +27,11 @@ if (typeof window !== 'undefined' && !getApps().length) {
 const auth: Auth = getAuth();
 
 const gAuthProvider: GoogleAuthProvider = new GoogleAuthProvider();
-gAuthProvider.setCustomParameters({ prompt: 'select_account'});
-const signInWithGoogle = (): Promise<UserCredential> => signInWithPopup(auth, gAuthProvider);
+gAuthProvider.setCustomParameters({ prompt: "select_account" });
+const signInWithGoogle = (): Promise<UserCredential> =>
+  signInWithPopup(auth, gAuthProvider);
 
-const signOut = (): Promise<void> => auth.signOut().then(() => window.location.reload());
+const signOut = (): Promise<void> =>
+  auth.signOut().then(() => window.location.reload());
 
 export { auth, signInWithGoogle, signOut };
