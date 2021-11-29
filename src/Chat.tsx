@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Button,
   Center,
   Flex,
   Box,
@@ -12,11 +13,16 @@ import { CheckCircleIcon } from "@chakra-ui/icons";
 import ScrollableFeed from "react-scrollable-feed";
 import moment from "moment";
 import misc from "./styles/misc.module.css";
+import { signOut } from "./service/firebase";
+import { useAuthContext } from "./auth/AuthProvider";
 
 export const Chat: React.FC = () => {
   //TODO: impolement authentication checker
 
   //TODO: Clean up after implementing the chat feature with firestore
+  const { currentUser } = useAuthContext();
+  console.log(currentUser);
+
   const me = true;
   const unsentMessages = [
     {
@@ -94,6 +100,11 @@ export const Chat: React.FC = () => {
             />
           </Flex>
         </Box>
+        <Button color="currentColor" valiant="outline" onClick={signOut}>
+          <Text as="span" align="center">
+            Sign out.
+          </Text>
+        </Button>
       </Flex>
     </Center>
   );

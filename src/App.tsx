@@ -1,12 +1,12 @@
 import React from "react";
 import { SignIn } from "./SignIn";
 import { Chat } from "./Chat";
+import { useAuthContext } from "./auth/AuthProvider";
 
 function App() {
-  // TODO: Clean up after implementing FB Auth stuff
-  const user = true;
+  const { currentUser } = useAuthContext();
 
-  return user ? <Chat /> : <SignIn />;
+  return currentUser ? <Chat /> : <SignIn />;
 }
 
 export default App;
