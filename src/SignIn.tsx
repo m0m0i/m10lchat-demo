@@ -12,6 +12,7 @@ import {
   VisuallyHidden,
 } from "@chakra-ui/react";
 import { FaGoogle } from "react-icons/fa";
+import { signInWithGoogle } from "./service/firebase";
 
 export const SignIn = () => (
   <Box
@@ -35,7 +36,11 @@ export const SignIn = () => (
           <Text as="span" align="center">
             Sign in with your Google account.
           </Text>
-          <Button color="currentColor" variant="outline">
+          <Button
+            color="currentColor"
+            variant="outline"
+            onClick={signInWithGoogle}
+          >
             <VisuallyHidden>Login with Google</VisuallyHidden>
             <FaGoogle />
           </Button>
