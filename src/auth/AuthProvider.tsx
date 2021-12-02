@@ -16,8 +16,12 @@ const AuthProvider: React.FC = ({ children }) => {
   );
 
   useEffect(() => {
-    auth.onAuthStateChanged((user) => setCurrentUser(user));
-  }, []);
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      user ? setCurrentUser(user) : setCurrentUser(null);
+    });
+
+    return unsubscribe;
+  }, [auth]);
 
   return (
     <AuthContext.Provider value={{ currentUser }}>
