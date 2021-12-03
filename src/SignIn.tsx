@@ -1,17 +1,18 @@
-import React from "react";
 import {
   Box,
-  Button,
   BoxProps,
-  SimpleGrid,
-  useColorModeValue,
-  Heading,
-  Text,
+  Button,
   HTMLChakraProps,
-  chakra,
+  Heading,
+  SimpleGrid,
+  Text,
   VisuallyHidden,
+  chakra,
+  useColorModeValue,
 } from "@chakra-ui/react";
+import React from "react";
 import { FaGoogle } from "react-icons/fa";
+
 import { signInWithGoogle } from "./service/firebase";
 
 const _signInWithGoogle = () => signInWithGoogle();
