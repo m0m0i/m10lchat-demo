@@ -1,59 +1,79 @@
-import React from "react";
+import { CheckCircleIcon } from "@chakra-ui/icons";
 import {
+  Box,
   Button,
   Center,
   Flex,
-  Box,
   Input,
   Tag,
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
-import { CheckCircleIcon } from "@chakra-ui/icons";
-import ScrollableFeed from "react-scrollable-feed";
+import {
+  DocumentData,
+  addDoc,
+  collection,
+  orderBy,
+  query,
+  serverTimestamp,
+} from "firebase/firestore";
 import moment from "moment";
+import React, { useEffect, useRef, useState } from "react";
+import ScrollableFeed from "react-scrollable-feed";
+
+import { useAuthContext } from "../auth/AuthProvider";
+import { db, signOut } from "../service/firebase";
+import { useFirestoreQuery } from "../service/hooks";
 import misc from "./styles/misc.module.css";
-import { signOut } from "./service/firebase";
-import { useAuthContext } from "./auth/AuthProvider";
+
+const _signOut = () => signOut();
 
 export const Chat: React.FC = () => {
-  //TODO: impolement authentication checker
-
-  //TODO: Clean up after implementing the chat feature with firestore
   const { currentUser } = useAuthContext();
-  console.log(currentUser);
 
-  const me = true;
-  const unsentMessages = [
-    {
-      id: "00000",
-      text: "I am also a message",
-      sender: "somebody",
-      createdAt: "2021-11-26T01:10:51.634Z",
-      updatedAt: "2021-11-26T01:10:51.634Z",
-    },
-    {
-      id: "00002",
-      text: "Did you see this?",
-      sender: "anybody",
-      createdAt: "2021-11-26T01:10:11.634Z",
-      updatedAt: "2021-11-26T01:10:11.634Z",
-    },
-  ];
-  const messages = [
-    {
-      id: "00001",
-      text: "I am a message",
-      sender: "me",
-      createdAt: "2021-11-26T01:10:31.634Z",
-      updatedAt: "2021-11-26T01:10:31.634Z",
-    },
-  ];
+  if (currentUser !== undefined && currentUser !== null) {
+    const { uid, displayName, photoURL } = currentUser;
+  }
+  const [newMessage, setNewMessage] = useState<string>("");
 
-  //TODO: implement this with the Backend
-  const fireMessage = async (input: string) => {
-    console.log(`message to be sent is: ${input}`);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const bottomListRef = useRef<HTMLDivElement>(null);
+
+  const messagesRef = collection(db, "messages");
+  const messages = useFirestoreQuery(query(messagesRef, orderBy("createdAt")));
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [inputRef]);
+
+  const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log(e.target.value);
+    setNewMessage(e.target.value);
   };
+
+  const handleOnSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const trimmedMessage = newMessage.trim();
+    if (trimmedMessage) {
+      // Add new message in Firestore
+      await addDoc(messagesRef, {
+        text: trimmedMessage,
+        createdAt: serverTimestamp(),
+        uid: currentUser?.uid,
+        displayName: currentUser?.displayName,
+        photoURL: currentUser?.photoURL,
+      });
+      // Clear input field
+      setNewMessage("");
+      // Scroll down to the bottom of the list
+      bottomListRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const me = currentUser?.displayName;
 
   return (
     <Center>
@@ -65,6 +85,19 @@ export const Chat: React.FC = () => {
         flexDirection="column"
         px={{ base: "4", lg: "8" }}
       >
+        <Flex justifyContent="space-between">
+          <Text fontSize="2rem" fontWeight="bold">
+            Multilingual Chat x Antidote demo
+          </Text>
+          <Button
+            ml={24}
+            color="currentColor"
+            variant="ghost"
+            onClick={_signOut}
+          >
+            Sign Out
+          </Button>
+        </Flex>
         <Box
           maxHeight="100%"
           height="100%"
@@ -76,35 +109,30 @@ export const Chat: React.FC = () => {
           boxShadow="0 2px 2px #0f0f0f04"
         >
           <MessageFeed
-            me={me}
-            unsentMessages={unsentMessages}
+            me={true}
+            unsentMessages={messages}
             messages={messages}
           />
+          <Box ref={bottomListRef} />
           <Flex px={4} height={20} alignItems="center">
             <Input
               placeholder="Shoot a message"
               size="lg"
               bg="white"
+              variant="ghost"
               _focus={{ outline: "none" }}
+              ref={inputRef}
+              type="text"
+              value={newMessage}
+              onChange={handleOnChange}
               onKeyPress={(e) => {
-                const value = e.currentTarget.value;
-                if (
-                  e.key === "Enter" &&
-                  value.trim().length > 0 &&
-                  unsentMessages.length === 0
-                ) {
-                  fireMessage(value);
-                  e.currentTarget.value = "";
+                if (e.key === "Enter") {
+                  handleOnSubmit(e);
                 }
               }}
             />
           </Flex>
         </Box>
-        <Button color="currentColor" valiant="outline" onClick={signOut}>
-          <Text as="span" align="center">
-            Sign out.
-          </Text>
-        </Button>
       </Flex>
     </Center>
   );
@@ -120,8 +148,8 @@ export type Message = {
 };
 
 interface MessageFeedProps {
-  messages: Array<Message>;
-  unsentMessages: Array<Message>;
+  messages: DocumentData[];
+  unsentMessages: DocumentData[];
   me: Boolean;
 }
 

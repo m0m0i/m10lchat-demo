@@ -13,7 +13,7 @@ import {
 import React from "react";
 import { FaGoogle } from "react-icons/fa";
 
-import { signInWithGoogle } from "./service/firebase";
+import { signInWithGoogle } from "../service/firebase";
 
 const _signInWithGoogle = () => signInWithGoogle();
 
