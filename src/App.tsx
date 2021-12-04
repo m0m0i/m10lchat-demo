@@ -1,12 +1,11 @@
 import React from "react";
-import { SignIn } from "./SignIn";
-import { Chat } from "./Chat";
-import { useAuthContext } from "./auth/AuthProvider";
 
-function App() {
+import { useAuthContext } from "./auth/AuthProvider";
+import { Chat } from "./components/Chat";
+import { SignIn } from "./components/SignIn";
+
+export const App: React.FC = () => {
   const { currentUser } = useAuthContext();
 
   return currentUser ? <Chat /> : <SignIn />;
-}
-
-export default App;
+};
