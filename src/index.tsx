@@ -2,7 +2,7 @@ import { ChakraProvider } from "@chakra-ui/react";
 import React from "react";
 import ReactDOM from "react-dom";
 
-import App from "./App";
+import { App } from "./App";
 import { AuthProvider } from "./auth/AuthProvider";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
