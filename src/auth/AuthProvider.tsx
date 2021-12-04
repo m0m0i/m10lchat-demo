@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
 import { User } from "firebase/auth";
+import React, { createContext, useContext, useEffect, useState } from "react";
+
 import { auth } from "../service/firebase";
 
 type AuthContextProps = {
@@ -16,7 +17,11 @@ const AuthProvider: React.FC = ({ children }) => {
   );
 
   useEffect(() => {
-    auth.onAuthStateChanged((user) => setCurrentUser(user));
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      user ? setCurrentUser(user) : setCurrentUser(null);
+    });
+
+    return unsubscribe;
   }, []);
 
   return (

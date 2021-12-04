@@ -1,18 +1,21 @@
-import React from "react";
 import {
   Box,
-  Button,
   BoxProps,
-  SimpleGrid,
-  useColorModeValue,
-  Heading,
-  Text,
+  Button,
   HTMLChakraProps,
-  chakra,
+  Heading,
+  SimpleGrid,
+  Text,
   VisuallyHidden,
+  chakra,
+  useColorModeValue,
 } from "@chakra-ui/react";
+import React from "react";
 import { FaGoogle } from "react-icons/fa";
-import { signInWithGoogle } from "./service/firebase";
+
+import { signInWithGoogle } from "../service/firebase";
+
+const _signInWithGoogle = () => signInWithGoogle();
 
 export const SignIn = () => (
   <Box
@@ -20,6 +23,7 @@ export const SignIn = () => (
     minH="100vh"
     py="12"
     px={{ base: "4", lg: "8" }}
+    h="full"
   >
     <Box maxW="md" mx="auto" mt="200">
       <Heading textAlign="center" size="xl" fontWeight="extrabold">
@@ -39,7 +43,7 @@ export const SignIn = () => (
           <Button
             color="currentColor"
             variant="outline"
-            onClick={signInWithGoogle}
+            onClick={_signInWithGoogle}
           >
             <VisuallyHidden>Login with Google</VisuallyHidden>
             <FaGoogle />

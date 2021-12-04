@@ -14,9 +14,9 @@
     "@types/node": "^12.20.37",
     "@types/react": "^17.0.36",
     "@types/react-dom": "^17.0.11",
+    "date-fns": "^2.27.0",
     "firebase": "^9.5.0",
     "framer-motion": "^4.1.17",
-    "moment": "^2.29.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-icons": "^4.3.1",
@@ -30,7 +30,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "format": "npx prettier --write 'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,ts,tsx,json,css,scss,md}": [
@@ -62,6 +63,7 @@
     ]
   },
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^3.1.1",
     "eslint-plugin-prettier": "^4.0.0",
     "husky": "^7.0.0",
     "lint-staged": "^12.1.2",
