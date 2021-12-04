@@ -1,12 +1,14 @@
-import { initializeApp, getApps, FirebaseApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import { FirebaseApp, getApps, initializeApp } from "firebase/app";
 import {
   Auth,
-  getAuth,
+  AuthError,
   GoogleAuthProvider,
-  signInWithPopup,
   UserCredential,
+  getAuth,
+  signInWithPopup,
 } from "firebase/auth";
+import { Firestore, getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -19,18 +21,29 @@ const firebaseConfig = {
   measurementId: process.env.REACT_APP_MEASUREMENT_ID,
 };
 
+// Initialize Firebase app
 if (typeof window !== "undefined" && !getApps().length) {
   const app: FirebaseApp = initializeApp(firebaseConfig);
   getAnalytics(app);
 }
 
-const auth: Auth = getAuth();
+// Export Firebase auth Sign in/out methods
+export const auth: Auth = getAuth();
+auth.useDeviceLanguage();
 
 const gAuthProvider: GoogleAuthProvider = new GoogleAuthProvider();
 gAuthProvider.setCustomParameters({ prompt: "select_account" });
-const signInWithGoogle = (): Promise<UserCredential> =>
-  signInWithPopup(auth, gAuthProvider);
 
-const signOut = (): Promise<void> => auth.signOut();
+export const signInWithGoogle = async (): Promise<UserCredential | void> => {
+  try {
+    await signInWithPopup(auth, gAuthProvider);
+  } catch (error) {
+    console.log((error as AuthError).message);
+  }
+};
 
-export { auth, signInWithGoogle, signOut };
+export const signOut = (): Promise<void> =>
+  auth.signOut().catch((error) => console.log(error));
+
+// Export Firestore component
+export const db: Firestore = getFirestore();
