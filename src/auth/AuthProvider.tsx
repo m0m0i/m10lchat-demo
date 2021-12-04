@@ -22,7 +22,7 @@ const AuthProvider: React.FC = ({ children }) => {
     });
 
     return unsubscribe;
-  }, [auth]);
+  }, []);
 
   return (
     <AuthContext.Provider value={{ currentUser }}>
