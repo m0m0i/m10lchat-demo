@@ -2,6 +2,8 @@ import { Box, Flex, Image, Text } from "@chakra-ui/react";
 import { formatRelative } from "date-fns";
 import React from "react";
 
+import { MessageProps } from "../types";
+
 const formatDate = (date: Date): string => {
   let formattedDate = "";
   if (date) {
@@ -13,16 +15,6 @@ const formatDate = (date: Date): string => {
   }
   return formattedDate;
 };
-
-export interface MessageProps {
-  createdAt: {
-    seconds: number;
-  };
-  text: string;
-  displayName: string;
-  photoURL: string;
-  key?: number;
-}
 
 export const Message: React.FC<MessageProps> = (
   { createdAt = null, text = "", displayName = "", photoURL = "" },
