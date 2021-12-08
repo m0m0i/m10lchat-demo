@@ -1,43 +1,51 @@
 import { User } from "firebase/auth";
-import { Dispatch } from "react";
+import React, { Dispatch } from "react";
 
 export interface AuthContextProps {
   currentUser: User | null | undefined;
 }
 
 export interface RoomProps {
-  currentRoom: string | undefined;
+  currentRoom: string;
 }
 
-export interface ChatProps extends RoomProps {}
+export interface ChatProps {
+  currentRoomInfo: Room | undefined;
+}
 
 export interface Room {
   id: string;
   name: string;
   messageNum: number;
   users: string[];
-  empty?: boolean;
-  key?: number;
 }
 
-export interface RoomListItemProps extends Room {
-  handleSelectRoom: Dispatch<React.SetStateAction<string | undefined>>;
+export interface RoomListItemProps {
+  room: Room;
+  onRoomSelect: Dispatch<React.SetStateAction<string | undefined>>;
+  key?: number;
 }
 
 export interface RoomGroups {
   groups: Room[];
 }
 
-export interface RoomListProps extends RoomProps {
+export interface RoomListProps {
+  setRoomInfo: Dispatch<React.SetStateAction<Room[] | undefined>>;
   onRoomSelect: Dispatch<React.SetStateAction<string | undefined>>;
 }
 
 export interface MessageProps {
-  createdAt: {
-    seconds: number;
-  };
+  id: string;
+  createdAt: string;
+  lang: string;
+  num: number;
   text: string;
-  displayName: string;
-  photoURL: string;
+  translation: {
+    lang: string;
+    text: string;
+  }[];
+  sender: string;
+  photoURL?: string;
   key?: number;
 }
