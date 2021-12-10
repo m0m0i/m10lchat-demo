@@ -52,6 +52,9 @@ export const Chat: React.FC = () => {
     const trimmedMessage = newMessage.trim();
 
     if (trimmedMessage) {
+      // Clear input field
+      setNewMessage("");
+
       // Add new message in Firestore
       await addDoc(messagesRef, {
         text: trimmedMessage,
@@ -60,9 +63,6 @@ export const Chat: React.FC = () => {
         displayName: currentUser?.displayName,
         photoURL: currentUser?.photoURL,
       });
-
-      // Clear input field
-      setNewMessage("");
     }
   };
 
@@ -97,7 +97,7 @@ export const Chat: React.FC = () => {
               <Input
                 placeholder="Shoot a message"
                 pr="4.5rem"
-                bg="transparent"
+                bg="gray.50"
                 variant="ghost"
                 _focus={{ outline: "none" }}
                 ref={inputRef}
