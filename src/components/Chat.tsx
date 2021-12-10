@@ -7,40 +7,72 @@ import {
   InputRightElement,
   Text,
 } from "@chakra-ui/react";
-import {
-  DocumentData,
-  addDoc,
-  collection,
-  orderBy,
-  query,
-  serverTimestamp,
-} from "firebase/firestore";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import ScrollableFeed from "react-scrollable-feed";
 
 import { useAuthContext } from "../auth/AuthProvider";
-import { Message, MessageProps } from "../components/Message";
-import { db, signOut } from "../service/firebase";
-import { useFirestoreQuery } from "../service/hooks";
+import { Message } from "../components/Message";
+import { signOut } from "../service/firebase";
+import { clearLSValue, getLSValue, setLSValue } from "../service/lsHandler";
 import misc from "../styles/misc.module.css";
+import { ChatProps, MessageFeedProps, MessageProps } from "../types";
 
-const _signOut = () => signOut();
-
-export const Chat: React.FC = () => {
+export const Chat: React.FC<ChatProps> = ({ currentRoomInfo }) => {
   const { currentUser } = useAuthContext();
 
+  // console.log(currentRoomInfo);
+  const groupId = currentRoomInfo?.id;
+
+  const [messages, setMessages] = useState<MessageProps[] | []>([]);
   const [newMessage, setNewMessage] = useState<string>("");
 
   const inputRef = useRef<HTMLInputElement>(null);
-
-  const messagesRef = collection(db, "messages");
-  const messages = useFirestoreQuery(query(messagesRef, orderBy("createdAt")));
+  const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
     }
   }, [inputRef]);
+
+  const enterData = {
+    type: "ENTER",
+    text: "",
+    sender: {
+      name: currentUser?.displayName,
+      lang: "ja",
+    },
+    groupId,
+  };
+
+  useEffect(() => {
+    if (!socketRef.current) {
+      socketRef.current = new WebSocket(
+        `ws://${process.env.REACT_APP_SERVER_ADDRESS}/ws/chat`
+      );
+      console.log("Connected...");
+      socketRef.current.onopen = () => {
+        socketRef.current?.send(JSON.stringify(enterData));
+      };
+    }
+
+    socketRef.current.onmessage = (e) => {
+      const message: MessageProps[] = JSON.parse(e.data);
+      console.log("get messages from the server");
+      console.log(message);
+      const savedMessages: MessageProps[] = getLSValue(currentRoomInfo?.id);
+
+      savedMessages.push(message[message.length - 1]);
+      const updatedMessages = setLSValue(currentRoomInfo?.id, savedMessages);
+      setMessages(updatedMessages);
+    };
+
+    return () => {
+      console.log("Disconnected...");
+      clearLSValue(currentRoomInfo?.id);
+      socketRef.current?.close();
+    };
+  }, []);
 
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewMessage(e.target.value);
@@ -51,20 +83,25 @@ export const Chat: React.FC = () => {
 
     const trimmedMessage = newMessage.trim();
 
-    if (trimmedMessage) {
-      // Add new message in Firestore
-      await addDoc(messagesRef, {
-        text: trimmedMessage,
-        createdAt: serverTimestamp(),
-        uid: currentUser?.uid,
-        displayName: currentUser?.displayName,
-        photoURL: currentUser?.photoURL,
-      });
+    setNewMessage("");
 
-      // Clear input field
-      setNewMessage("");
+    if (trimmedMessage) {
+      const messeageToBeSent = {
+        type: "TALK",
+        text: trimmedMessage,
+        sender: {
+          uid: currentUser?.uid,
+          name: currentUser?.displayName,
+          lang: "ja",
+          photoURL: currentUser?.photoURL,
+        },
+        groupId: groupId,
+      };
+      socketRef.current?.send(JSON.stringify(messeageToBeSent));
     }
   };
+
+  const _signOut = () => signOut();
 
   return (
     <Flex flexDirection="column" height="full">
@@ -97,7 +134,7 @@ export const Chat: React.FC = () => {
               <Input
                 placeholder="Shoot a message"
                 pr="4.5rem"
-                bg="transparent"
+                bg="gray.100"
                 variant="ghost"
                 _focus={{ outline: "none" }}
                 ref={inputRef}
@@ -130,7 +167,7 @@ export const Chat: React.FC = () => {
   );
 };
 
-export const MessageFeed: React.FC<DocumentData> = ({ messages }) => {
+export const MessageFeed: React.FC<MessageFeedProps> = ({ messages }) => {
   const scrollBottomRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
@@ -141,7 +178,7 @@ export const MessageFeed: React.FC<DocumentData> = ({ messages }) => {
     <ScrollableFeed className={misc.hideScroll}>
       {messages
         ?.sort((a: MessageProps, b: MessageProps) =>
-          a?.createdAt?.seconds <= b?.createdAt?.seconds ? -1 : 1
+          a?.createdAt <= b?.createdAt ? -1 : 1
         )
         ?.map((message: MessageProps, key: number) => (
           <Message {...message} key={key} />
