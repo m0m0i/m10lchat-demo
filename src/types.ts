@@ -49,3 +49,17 @@ export interface MessageProps {
   photoURL?: string;
   key?: number;
 }
+
+export interface MessageFeedProps {
+  messages: MessageProps[];
+}
+
+export type GetLSValue = (
+  key: string | undefined,
+  defaultValue?: MessageProps[] | []
+) => MessageProps[] | [];
+
+export type SetLSValue = (
+  key: string | undefined,
+  value: MessageProps[]
+) => MessageProps[];
