@@ -35,31 +35,52 @@ export interface RoomListProps {
   onRoomSelect: Dispatch<React.SetStateAction<string | undefined>>;
 }
 
-export interface MessageProps {
+export interface ReceivedMessage {
   id: string;
   createdAt: string;
   lang: string;
   num: number;
   text: string;
-  translation: {
+  translations: {
     lang: string;
     text: string;
   }[];
   sender: string;
   photoURL?: string;
+}
+
+export interface SendMessage {
+  type: string;
+  text: string;
+  sender: {
+    uid: string;
+    name: string;
+    lang: string;
+    photoURL: string;
+  };
+  groupId: string;
+}
+
+export interface MessageProps {
+  message: ReceivedMessage;
   key?: number;
+  language?: string | null | undefined;
 }
 
 export interface MessageFeedProps {
-  messages: MessageProps[];
+  messages: ReceivedMessage[];
+  language: string | null | undefined;
 }
 
-export type GetLSValue = (
-  key: string | undefined,
-  defaultValue?: MessageProps[] | []
-) => MessageProps[] | [];
+export type GetLSValue = (key: string) => any;
 
 export type SetLSValue = (
-  key: string | undefined,
-  value: MessageProps[]
-) => MessageProps[];
+  key: string,
+  value: ReceivedMessage[] | LocalUserInfo
+) => any;
+
+export type LanguageAndCode = [string, string];
+
+export interface LocalUserInfo {
+  language: string;
+}
