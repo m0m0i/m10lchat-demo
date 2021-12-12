@@ -2,28 +2,34 @@ import {
   Box,
   Button,
   Flex,
+  Heading,
   Input,
   InputGroup,
   InputRightElement,
   Text,
 } from "@chakra-ui/react";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import ScrollableFeed from "react-scrollable-feed";
+import React, { useEffect, useRef, useState } from "react";
 
 import { useAuthContext } from "../auth/AuthProvider";
-import { Message } from "../components/Message";
+import { MessageFeed } from "../components/MessageFeed";
+import { createMessagePacket } from "../service/beApiHandler";
 import { signOut } from "../service/firebase";
-import { clearLSValue, getLSValue, setLSValue } from "../service/lsHandler";
-import misc from "../styles/misc.module.css";
-import { ChatProps, MessageFeedProps, MessageProps } from "../types";
+import {
+  clearLSValue,
+  getPreferredLanguage,
+  getSavedMessages,
+  setLSValue,
+} from "../service/lsHandler";
+import { ChatProps, ReceivedMessage } from "../types";
 
 export const Chat: React.FC<ChatProps> = ({ currentRoomInfo }) => {
   const { currentUser } = useAuthContext();
 
-  // console.log(currentRoomInfo);
   const groupId = currentRoomInfo?.id;
+  const roomName = currentRoomInfo?.name;
+  const savedLanguage = currentUser && getPreferredLanguage(currentUser.uid);
 
-  const [messages, setMessages] = useState<MessageProps[] | []>([]);
+  const [messages, setMessages] = useState<ReceivedMessage[] | []>([]);
   const [newMessage, setNewMessage] = useState<string>("");
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -35,36 +41,40 @@ export const Chat: React.FC<ChatProps> = ({ currentRoomInfo }) => {
     }
   }, [inputRef]);
 
-  const enterData = {
-    type: "ENTER",
-    text: "",
-    sender: {
-      name: currentUser?.displayName,
-      lang: "ja",
-    },
-    groupId,
-  };
-
   useEffect(() => {
     if (!socketRef.current) {
       socketRef.current = new WebSocket(
         `ws://${process.env.REACT_APP_SERVER_ADDRESS}/ws/chat`
       );
+
+      const enterData = {
+        type: "ENTER",
+        text: "",
+        sender: {
+          name: currentUser?.displayName,
+          lang: savedLanguage,
+        },
+        groupId,
+      };
+
       console.log("Connected...");
       socketRef.current.onopen = () => {
         socketRef.current?.send(JSON.stringify(enterData));
       };
     }
 
-    socketRef.current.onmessage = (e) => {
-      const message: MessageProps[] = JSON.parse(e.data);
-      console.log("get messages from the server");
-      console.log(message);
-      const savedMessages: MessageProps[] = getLSValue(currentRoomInfo?.id);
+    socketRef.current.onmessage = (event) => {
+      const message: ReceivedMessage[] = JSON.parse(event.data);
 
-      savedMessages.push(message[message.length - 1]);
-      const updatedMessages = setLSValue(currentRoomInfo?.id, savedMessages);
-      setMessages(updatedMessages);
+      if (groupId) {
+        const savedMessages: ReceivedMessage[] = getSavedMessages(groupId);
+
+        // Update messages
+        savedMessages.push(message[message.length - 1]);
+
+        setLSValue(groupId, savedMessages);
+        setMessages(savedMessages);
+      }
     };
 
     return () => {
@@ -72,32 +82,24 @@ export const Chat: React.FC<ChatProps> = ({ currentRoomInfo }) => {
       clearLSValue(currentRoomInfo?.id);
       socketRef.current?.close();
     };
-  }, []);
+  }, [currentRoomInfo, currentUser?.displayName, groupId, savedLanguage]);
 
-  const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewMessage(e.target.value);
+  const handleOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setNewMessage(event.target.value);
   };
 
-  const handleOnSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleOnSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
 
     const trimmedMessage = newMessage.trim();
 
     setNewMessage("");
 
     if (trimmedMessage) {
-      const messeageToBeSent = {
-        type: "TALK",
-        text: trimmedMessage,
-        sender: {
-          uid: currentUser?.uid,
-          name: currentUser?.displayName,
-          lang: "ja",
-          photoURL: currentUser?.photoURL,
-        },
-        groupId: groupId,
-      };
-      socketRef.current?.send(JSON.stringify(messeageToBeSent));
+      const messagePacket =
+        currentUser &&
+        createMessagePacket(currentUser, trimmedMessage, groupId);
+      messagePacket && socketRef.current?.send(messagePacket);
     }
   };
 
@@ -115,9 +117,9 @@ export const Chat: React.FC<ChatProps> = ({ currentRoomInfo }) => {
         >
           <Box border="2" borderColor="gray.200" py={8} mb={4} flex="1">
             <Flex justifyContent="space-between">
-              <Text fontSize="2rem" fontWeight="bold">
-                Multilingual Chat x Antidote demo
-              </Text>
+              <Heading fontSize="3xl" fontWeight="bold">
+                {roomName}
+              </Heading>
               <Button
                 ml={24}
                 color="currentColor"
@@ -128,8 +130,16 @@ export const Chat: React.FC<ChatProps> = ({ currentRoomInfo }) => {
               </Button>
             </Flex>
           </Box>
-          <MessageFeed messages={messages} />
+          <MessageFeed messages={messages} language={savedLanguage} />
           <Box mb="6" mx="4">
+            {/* TODO: Design logic -> As a user I want to chage my preferred language in the room so that I can easily change the messages language */}
+            {/* <LanguageSelector /> */}
+            <Flex justifyContent={"flex-end"} mr="4">
+              <Text
+                fontSize={"xs"}
+                color={"gray.400"}
+              >{`Your preferred language is set as "${savedLanguage}"`}</Text>
+            </Flex>
             <InputGroup mx="auto">
               <Input
                 placeholder="Shoot a message"
@@ -164,26 +174,5 @@ export const Chat: React.FC<ChatProps> = ({ currentRoomInfo }) => {
         </Flex>
       </Box>
     </Flex>
-  );
-};
-
-export const MessageFeed: React.FC<MessageFeedProps> = ({ messages }) => {
-  const scrollBottomRef = useRef<HTMLDivElement>(null);
-
-  useLayoutEffect(() => {
-    scrollBottomRef?.current?.scrollIntoView();
-  }, []);
-
-  return (
-    <ScrollableFeed className={misc.hideScroll}>
-      {messages
-        ?.sort((a: MessageProps, b: MessageProps) =>
-          a?.createdAt <= b?.createdAt ? -1 : 1
-        )
-        ?.map((message: MessageProps, key: number) => (
-          <Message {...message} key={key} />
-        ))}
-      <div ref={scrollBottomRef} />
-    </ScrollableFeed>
   );
 };

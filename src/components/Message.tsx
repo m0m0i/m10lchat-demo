@@ -1,6 +1,6 @@
 import { Box, Flex, Image, Text } from "@chakra-ui/react";
 import { formatRelative } from "date-fns";
-import React from "react";
+import React, { useState } from "react";
 
 import { MessageProps } from "../types";
 
@@ -16,9 +16,27 @@ const formatDate = (date: Date): string => {
   return formattedDate;
 };
 
-export const Message: React.FC<MessageProps> = ({ ...message }, key) => {
-  const { text, createdAt, photoURL, sender } = message;
+// TODO: set system message small and gray
+export const Message: React.FC<MessageProps> = ({ message, language }, key) => {
+  const { text, createdAt, photoURL, sender, translations } = message;
+
+  const initialMessage = translations.filter(
+    (message) => message.lang === language
+  )[0].text;
+
+  const [messageToBeDisplayed, setMessageToBeDisplayed] =
+    useState<string>(initialMessage);
+  const [showOriginal, setShowOriginal] = useState<boolean>(false);
+
   if (!text) return null;
+
+  const onChangeMessageLanguageHandler = (e: React.FormEvent) => {
+    e.preventDefault();
+    setShowOriginal(!showOriginal);
+    showOriginal
+      ? setMessageToBeDisplayed(initialMessage)
+      : setMessageToBeDisplayed(text);
+  };
 
   return (
     <Flex px="4" py="4" raunded="md" align="start">
@@ -55,7 +73,28 @@ export const Message: React.FC<MessageProps> = ({ ...message }, key) => {
             </Box>
           ) : null}
         </Flex>
-        <Text>{text}</Text>
+        <Text>{messageToBeDisplayed}</Text>
+        {showOriginal ? (
+          <Text
+            as="button"
+            textColor={"gray.400"}
+            fontSize="xs"
+            alignContent="end"
+            onClick={onChangeMessageLanguageHandler}
+          >
+            {`show your language`}
+          </Text>
+        ) : (
+          <Text
+            as="button"
+            textColor={"gray.400"}
+            fontSize="xs"
+            alignContent="end"
+            onClick={onChangeMessageLanguageHandler}
+          >
+            {`show in original language`}
+          </Text>
+        )}
       </Box>
     </Flex>
   );

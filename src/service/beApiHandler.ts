@@ -1,3 +1,5 @@
+import { User } from "firebase/auth";
+
 import { Room } from "../types";
 
 const createURLSearchParams = (data: string) => {
@@ -21,4 +23,24 @@ export const roomCreateHandler = async (url: string, data: string) => {
     .catch((err) => console.log(err));
 
   return createdRoom;
+};
+
+export const createMessagePacket = (
+  currentUser: User,
+  message: string,
+  groupId: string | undefined
+): string => {
+  const { uid, displayName, photoURL } = currentUser;
+
+  return JSON.stringify({
+    type: "TALK",
+    text: message,
+    sender: {
+      uid: uid,
+      name: displayName,
+      lang: "ja",
+      photoURL: photoURL,
+    },
+    groupId,
+  });
 };

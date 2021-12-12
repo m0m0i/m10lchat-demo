@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 
+import { Chat } from "../pages/Chat";
+import { RoomList } from "../pages/RoomList";
 import { Room } from "../types";
-import { Chat } from "./Chat";
-import { RoomList } from "./RoomList";
 
 export const RoomSelector: React.FC = () => {
   const [roomInfo, setRoomInfo] = useState<Room[] | undefined>(undefined);
@@ -14,10 +14,11 @@ export const RoomSelector: React.FC = () => {
   useEffect(() => {
     if (currentRoom && roomInfo) {
       const selectedRoom = roomInfo.filter((room) => currentRoom === room.name);
-      console.log(selectedRoom);
+      selectedRoom[0]?.name &&
+        console.log(`Your selected room: ${selectedRoom[0].name}`);
       setCurrentRoomInfo(selectedRoom[0]);
     }
-  });
+  }, [setCurrentRoomInfo, currentRoom, roomInfo]);
 
   return currentRoomInfo ? (
     <Chat currentRoomInfo={currentRoomInfo} />
