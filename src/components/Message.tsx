@@ -18,7 +18,8 @@ const formatDate = (date: Date): string => {
 
 // TODO: set system message small and gray
 export const Message: React.FC<MessageProps> = ({ message, language }, key) => {
-  const { text, createdAt, photoURL, sender, translations } = message;
+  const { text, createdAt, sender, translations } = message;
+  const { photoUrl, name } = sender;
 
   const initialMessage = translations.filter(
     (message) => message.lang === language
@@ -40,9 +41,9 @@ export const Message: React.FC<MessageProps> = ({ message, language }, key) => {
 
   return (
     <Flex px="4" py="4" raunded="md" align="start">
-      {photoURL ? (
+      {photoUrl ? (
         <Image
-          src={photoURL}
+          src={photoUrl}
           alt="Avatar"
           borderRadius="full"
           mr={4}
@@ -50,16 +51,17 @@ export const Message: React.FC<MessageProps> = ({ message, language }, key) => {
           h={45}
         />
       ) : null}
+      {/* TODO: !photoUrl => <Avator /> */}
       <Box>
         <Flex align="center" mb={1}>
-          {sender ? (
+          {name ? (
             <Text
               textColor={"purple.600"}
               mr={2}
               fontWeight="bold"
               fontSize="xs"
             >
-              {sender}
+              {name}
             </Text>
           ) : null}
           {createdAt ? (
