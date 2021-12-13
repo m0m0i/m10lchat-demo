@@ -45,7 +45,10 @@ export interface ReceivedMessage {
     lang: string;
     text: string;
   }[];
-  sender: string;
+  sender: {
+    name: string;
+    photoUrl: string;
+  };
   photoURL?: string;
 }
 
