@@ -39,7 +39,7 @@ export const createMessagePacket = (
       uid: uid,
       name: displayName,
       lang: "ja",
-      photoURL: photoURL,
+      photoUrl: photoURL,
     },
     groupId,
   });
