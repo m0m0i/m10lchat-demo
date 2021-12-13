@@ -44,7 +44,7 @@ export const Chat: React.FC<ChatProps> = ({ currentRoomInfo }) => {
   useEffect(() => {
     if (!socketRef.current) {
       socketRef.current = new WebSocket(
-        `ws://${process.env.REACT_APP_SERVER_ADDRESS}/ws/chat`
+        `wss://${process.env.REACT_APP_SERVER_ADDRESS}/ws/chat`
       );
 
       const enterData = {
