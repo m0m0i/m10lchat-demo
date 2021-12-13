@@ -57,9 +57,9 @@ export const Chat: React.FC<ChatProps> = ({ currentRoomInfo }) => {
         groupId,
       };
 
-      console.log("Connected...");
       socketRef.current.onopen = () => {
         socketRef.current?.send(JSON.stringify(enterData));
+        console.log("Connected...");
       };
     }
 
@@ -68,13 +68,16 @@ export const Chat: React.FC<ChatProps> = ({ currentRoomInfo }) => {
 
       if (groupId) {
         const savedMessages: ReceivedMessage[] = getSavedMessages(groupId);
-
         // Update messages
         savedMessages.push(message[message.length - 1]);
 
         setLSValue(groupId, savedMessages);
         setMessages(savedMessages);
       }
+    };
+
+    socketRef.current.onerror = (event) => {
+      console.log(`WebSocket Error: ${event}`);
     };
 
     return () => {
