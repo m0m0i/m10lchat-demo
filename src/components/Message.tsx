@@ -1,4 +1,4 @@
-import { Box, Flex, Image, Text } from "@chakra-ui/react";
+import { Avatar, Box, Flex, Text } from "@chakra-ui/react";
 import { formatRelative } from "date-fns";
 import React, { useState } from "react";
 
@@ -39,65 +39,89 @@ export const Message: React.FC<MessageProps> = ({ message, language }, key) => {
       : setMessageToBeDisplayed(text);
   };
 
+  const isSystemMessage: boolean = name === "System";
+
   return (
     <Flex px="4" py="4" raunded="md" align="start">
-      {photoUrl ? (
-        <Image
-          src={photoUrl}
-          alt="Avatar"
-          borderRadius="full"
-          mr={4}
-          w={45}
-          h={45}
-        />
-      ) : null}
-      {/* TODO: !photoUrl => <Avator /> */}
-      <Box>
-        <Flex align="center" mb={1}>
-          {name ? (
-            <Text
-              textColor={"purple.600"}
-              mr={2}
-              fontWeight="bold"
-              fontSize="xs"
-            >
-              {name}
-            </Text>
-          ) : null}
-          {createdAt ? (
-            <Box
-              as="span"
-              textColor={"gray.600"}
-              fontSize="xs"
-              alignContent="end"
-            >
-              {formatDate(new Date(createdAt))}
-            </Box>
-          ) : null}
-        </Flex>
-        <Text>{messageToBeDisplayed}</Text>
-        {showOriginal ? (
-          <Text
-            as="button"
-            textColor={"gray.400"}
-            fontSize="xs"
-            alignContent="end"
-            onClick={onChangeMessageLanguageHandler}
-          >
-            {`show your language`}
+      {isSystemMessage ? (
+        <Box>
+          <Flex align="center" mb={1}>
+            {name ? (
+              <Text
+                textColor={"purple.400"}
+                mr={2}
+                fontWeight="bold"
+                fontSize="xs"
+              >
+                {name}
+              </Text>
+            ) : null}
+            {createdAt ? (
+              <Box
+                as="span"
+                textColor={"gray.600"}
+                fontSize="xs"
+                alignContent="end"
+              >
+                {formatDate(new Date(createdAt))}
+              </Box>
+            ) : null}
+          </Flex>
+          <Text fontSize="xs" color="gray.400">
+            {messageToBeDisplayed}
           </Text>
-        ) : (
-          <Text
-            as="button"
-            textColor={"gray.400"}
-            fontSize="xs"
-            alignContent="end"
-            onClick={onChangeMessageLanguageHandler}
-          >
-            {`show in original language`}
-          </Text>
-        )}
-      </Box>
+        </Box>
+      ) : (
+        <>
+          <Avatar name={name} src={photoUrl} size="md" mr={4} />
+          <Box>
+            <Flex align="center" mb={1}>
+              {name ? (
+                <Text
+                  textColor={"purple.600"}
+                  mr={2}
+                  fontWeight="bold"
+                  fontSize="xs"
+                >
+                  {name}
+                </Text>
+              ) : null}
+              {createdAt ? (
+                <Box
+                  as="span"
+                  textColor={"gray.600"}
+                  fontSize="xs"
+                  alignContent="end"
+                >
+                  {formatDate(new Date(createdAt))}
+                </Box>
+              ) : null}
+            </Flex>
+            <Text>{messageToBeDisplayed}</Text>
+            {showOriginal ? (
+              <Text
+                as="button"
+                textColor={"gray.400"}
+                fontSize="xs"
+                alignContent="end"
+                onClick={onChangeMessageLanguageHandler}
+              >
+                {`show your language`}
+              </Text>
+            ) : (
+              <Text
+                as="button"
+                textColor={"gray.400"}
+                fontSize="xs"
+                alignContent="end"
+                onClick={onChangeMessageLanguageHandler}
+              >
+                {`show in original language`}
+              </Text>
+            )}
+          </Box>
+        </>
+      )}
     </Flex>
   );
 };
