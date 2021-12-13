@@ -23,8 +23,8 @@ export const RoomList: React.FC<RoomListProps> = ({
   onRoomSelect,
 }) => {
   // Set the backend API server address
-  const url = `http://${process.env.REACT_APP_SERVER_ADDRESS}/chats/groups`;
-
+  const url = `https://${process.env.REACT_APP_SERVER_ADDRESS}/chats/groups`;
+  
   const [groups, setGroups] = useState<Room[]>([]);
   const [newRoom, setNewRoom] = useState<string>("");
 
