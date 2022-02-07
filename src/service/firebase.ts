@@ -37,6 +37,7 @@ const firebaseConfig = {
 
 // Initialize Firebase app
 if (typeof window !== "undefined" && !getApps().length) {
+  // eslint-disable-next-line
   const app: FirebaseApp = initializeApp(firebaseConfig);
 }
 
