@@ -8,9 +8,6 @@ This multilingual chat application demo is using Google Cloud AI power to find o
 オンラインゲーム、これからくるメタバースの世界には、たくさんの歓迎したくない振舞いが見られるかもしれません。例えば、セクハラやヘイトスピーチ、恐喝、スパミング、煽りなどです。なので、我々の健康的な仮想空間生活を保つためにこれらの迷惑行為を軽減したいです。
 こちらの多言語対応チャットのデモは、Google Cloud AI の力で悪意ある振舞いを見つけられますので、管理者は簡単にそういった行為を特定し、自身のサービスから除外することができます。
 
-## Demo
-![Multilingual Chat Demo Recording](images/dbm-chat-demo-movie.mov "Multilingual Chat Demo Recording")
-
 ## Preparation  🚀
 A few steps to set up this demo.
 
