@@ -53,6 +53,10 @@ Enhancement ideas
 - [ ] isLoading
 - [ ] Change language within the room
 
+Disclaimer
+This project is not an official Google project. It is not supported by Google and Google specifically disclaims all warranties as to its quality, merchantability, or fitness for a particular purpose.
+
+
 ## License
 [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0)  
 [Terms of Service for Firebase Services](https://firebase.google.com/terms/).
