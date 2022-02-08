@@ -1,9 +1,36 @@
-# Hi there,
-This is the Multilingual chat and toxic behavior detection applicaiton demo.  
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Multilingual Chat Frontend
+## Introduction
+This is the Multilingual chat and the toxic behavior detection solution demo application.\
+In the online gaming world and coming Metaverse world, this might includes a lot of unwilling behaviors, such as sexual harassment, hate speech, threats of violence, doxing, spamming, flaming, griefing, and intentionally inhibiting the performance of one’s own team. So we want to mitigate this kind of "disruptive behavior" for healthy happy gaming/virtual lives.
+This multilingual chat application demo is using Google Cloud AI power to find out "bad behaviors", so as to you can simply detect and ban bad players.
 
-## Available Scripts
+## Preparation
+A few steps to set up this demo.
+### Backend Service
+This is the frontend application for the demo. You can use [this repo](https://github.com/Wonha/multilingual-chat.git) for the backend service.
 
+### Firebase Authentication
+You need a firebase project for the user authentication.
+Please refer [this website](https://firebase.google.com/docs/auth) for preparing Firebase Authenticaiton.\
+
+### `.env` file
+You need to create `.env` file on the root directory of your local application code directory(the same directory as `package.json`)
+```
+# Firebase config
+REACT_APP_API_KEY=""
+REACT_APP_AUTH_DOMAIN=""
+REACT_APP_PROJECT_ID=""
+REACT_APP_STORAGE_BUCKET=""
+REACT_APP_MESSAGING_SENDER_ID=""
+REACT_APP_APP_ID=""
+REACT_APP_MEASUREMENT_ID=""
+
+# Backend server address
+REACT_APP_SERVER_ADDRESS=""
+```
+
+## Getting Started 🚀
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).\
 In the project directory, you can run:
 
 ### `npm start`
@@ -11,30 +38,21 @@ In the project directory, you can run:
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
-
 ### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
 ### `npm run build`
 
 Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
 ### `npm run eject`
 
 **Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Notes
+Enhancement ideas
+- [ ] isLoading
+- [ ] Change language within the room
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## License
+[Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0)  
+[Terms of Service for Firebase Services](https://firebase.google.com/terms/).
